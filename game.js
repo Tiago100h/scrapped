@@ -158,6 +158,7 @@ var SceneB = new Phaser.Class({
         this.load.image('parafuso', 'assets/Parafuso.png');
         this.load.image('fundo', 'assets/fundo.png');
         this.load.image('cometa', 'assets/asteroide.png');
+        this.load.image('acelerar', 'assets/star.png');
     },
 
     create: function () {
@@ -210,10 +211,13 @@ var SceneB = new Phaser.Class({
         tempoMaximo = (1 + 1 / 2) * 60 * 1000;
         info = this.add.text(10, 70, '', { font: '16px Arial', fill: '#fff' });
         timer = this.time.addEvent({ delay: tempoMaximo, callback: gameOver, callbackScope: this });
+
+        pointer = this.input.activePointer;
     },
 
     update: function (time, delta) {
-        if (cursors.up.isDown) {
+        var acelerar = pointer.isDown && pointer.x >= 600 && pointer.y >= 500;
+        if (cursors.up.isDown || acelerar) {
             this.physics.velocityFromRotation(sprite.rotation, 200, sprite.body.acceleration);
             sprite.anims.play('on');
         }
@@ -221,11 +225,12 @@ var SceneB = new Phaser.Class({
             sprite.setAcceleration(0);
             sprite.anims.play('off');
         }
-
-        if (cursors.left.isDown) {
+        var esquerda = pointer.isDown && pointer.x <= 100 && pointer.y >= 500;
+        var direita = pointer.isDown && pointer.x >= 100 && pointer.x <= 200 && pointer.y >= 500;
+        if (cursors.left.isDown || esquerda) {
             sprite.setAngularVelocity(-300);
         }
-        else if (cursors.right.isDown) {
+        else if (cursors.right.isDown || direita) {
             sprite.setAngularVelocity(300);
         }
         else {
@@ -338,7 +343,7 @@ var config = {
             gravity: { y: 0 }
         }
     },
-    scene: [ SceneA, SceneB, SceneC, SceneD, SceneE]
+    scene: [SceneA, SceneB, SceneC, SceneD, SceneE]
 };
 
 var sprite;
@@ -362,5 +367,6 @@ var info;
 var tempoMaximo;
 var proximoNivel = false;
 var lixo;
+var pointer;
 
 var game = new Phaser.Game(config);
