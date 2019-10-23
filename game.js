@@ -158,7 +158,9 @@ var SceneB = new Phaser.Class({
         this.load.image('parafuso', 'assets/Parafuso.png');
         this.load.image('fundo', 'assets/fundo.png');
         this.load.image('cometa', 'assets/asteroide.png');
-        this.load.image('acelerar', 'assets/star.png');
+        this.load.image('up', 'assets/up.png');
+        this.load.image('esquerda', 'assets/esquerda.png');
+        this.load.image('direita', 'assets/direita.png');
     },
 
     create: function () {
@@ -212,11 +214,32 @@ var SceneB = new Phaser.Class({
         info = this.add.text(10, 70, '', { font: '16px Arial', fill: '#fff' });
         timer = this.time.addEvent({ delay: tempoMaximo, callback: gameOver, callbackScope: this });
 
-        pointer = this.input.activePointer;
+        botaoAcelerar = this.add.sprite(720, 490, 'up').setInteractive();
+        botaoAcelerar.on('pointerdown', function (pointer1) {
+            acelerar = true;
+        });
+        botaoAcelerar.on('pointerup', function (pointer1) {
+            acelerar = false;
+        });
+
+        botaoEsquerda = this.add.sprite(110, 500, 'esquerda').setInteractive();
+        botaoEsquerda.on('pointerdown', function (pointer2) {
+            virarEsquerda = true;
+        });
+        botaoEsquerda.on('pointerup', function (pointer2) {
+            virarEsquerda = false;
+        });
+
+        botaoDireita = this.add.sprite(340, 500, 'direita').setInteractive();
+        botaoDireita.on('pointerdown', function (pointer3) {
+            virarDireita = true;
+        });
+        botaoDireita.on('pointerup', function (pointer3) {
+            virarDireita = false;
+        });
     },
 
     update: function (time, delta) {
-        var acelerar = pointer.isDown && pointer.x >= 600 && pointer.y >= 500;
         if (cursors.up.isDown || acelerar) {
             this.physics.velocityFromRotation(sprite.rotation, 200, sprite.body.acceleration);
             sprite.anims.play('on');
@@ -225,12 +248,10 @@ var SceneB = new Phaser.Class({
             sprite.setAcceleration(0);
             sprite.anims.play('off');
         }
-        var esquerda = pointer.isDown && pointer.x <= 100 && pointer.y >= 500;
-        var direita = pointer.isDown && pointer.x >= 100 && pointer.x <= 200 && pointer.y >= 500;
-        if (cursors.left.isDown || esquerda) {
+        if (cursors.left.isDown || virarEsquerda) {
             sprite.setAngularVelocity(-300);
         }
-        else if (cursors.right.isDown || direita) {
+        else if (cursors.right.isDown || virarDireita) {
             sprite.setAngularVelocity(300);
         }
         else {
@@ -343,6 +364,9 @@ var config = {
             gravity: { y: 0 }
         }
     },
+    input: {
+        activePointers: 3
+    },
     scene: [SceneA, SceneB, SceneC, SceneD, SceneE]
 };
 
@@ -367,6 +391,11 @@ var info;
 var tempoMaximo;
 var proximoNivel = false;
 var lixo;
-var pointer;
+var botaoAcelerar;
+var acelerar = false;
+var botaoDireita;
+var virarDireita = false
+var botaoEsquerda;
+var virarEsquerda = false;
 
 var game = new Phaser.Game(config);
